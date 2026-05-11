@@ -1,0 +1,44 @@
+<div class="login-page">
+  <section class="hero">
+    <div class="pill">Spring Boot + Angular + JWT</div>
+    <h1>Gestion moderne de location de vehicules</h1>
+    <p>Interface responsive pour les agences, les vehicules, les voitures, les motos et l'historique des locations.</p>
+    <div class="hero-grid">
+      <div><strong>3</strong><span>Roles securises</span></div>
+      <div><strong>JWT</strong><span>Authentification</span></div>
+      <div><strong>H2</strong><span>Base de test</span></div>
+    </div>
+  </section>
+
+  <section class="login-card card">
+    <div class="card-title">
+      <span>VR</span>
+      <div>
+        <h2>Connexion</h2>
+        <p>Utilisez un compte demo pour tester les autorisations.</p>
+      </div>
+    </div>
+
+    <div class="alert error" *ngIf="error">{{ error }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <div class="field">
+        <label>Nom utilisateur</label>
+        <input formControlName="username" placeholder="admin">
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input formControlName="password" placeholder="admin123" type="password">
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="loading">
+        {{ loading ? 'Connexion...' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <div class="demo-users">
+      <button class="btn btn-ghost" type="button" (click)="useDemo('admin','admin123')">Admin</button>
+      <button class="btn btn-ghost" type="button" (click)="useDemo('employee','employee123')">Employe</button>
+      <button class="btn btn-ghost" type="button" (click)="useDemo('client','client123')">Client</button>
+    </div>
+  </section>
+</div>

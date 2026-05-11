@@ -1,0 +1,84 @@
+<div class="page-header">
+  <div>
+    <h1>Locations</h1>
+    <p>Creez une location et consultez l'historique pour les employes et admins.</p>
+  </div>
+  <span class="badge info">{{ availableVehicles.length }} vehicules disponibles</span>
+</div>
+
+<div class="alert error" *ngIf="error">{{ error }}</div>
+<div class="alert success" *ngIf="success">{{ success }}</div>
+
+<section class="grid grid-2 rental-layout">
+  <article class="card form-card">
+    <h2>Nouvelle location</h2>
+    <p>Le vehicule choisi passera automatiquement au statut LOUE.</p>
+    <form [formGroup]="form" (ngSubmit)="createRental()" class="form-grid one">
+      <div class="field">
+        <label>Vehicule</label>
+        <select formControlName="vehicleId">
+          <option [ngValue]="0">Choisir un vehicule</option>
+          <option *ngFor="let vehicle of availableVehicles" [ngValue]="vehicle.id">
+            {{ vehicle.marque }} {{ vehicle.modele }} - {{ vehicle.prixParJour | number:'1.0-0' }} DH/j
+          </option>
+        </select>
+      </div>
+      <div class="field"><label>Client</label><input formControlName="clientName" placeholder="Nom complet"></div>
+      <div class="field"><label>Email</label><input formControlName="clientEmail" placeholder="client@email.com"></div>
+      <div class="field"><label>Date debut</label><input type="date" formControlName="dateDebut"></div>
+      <div class="field"><label>Date fin</label><input type="date" formControlName="dateFin"></div>
+      <button class="btn btn-primary" type="submit" [disabled]="saving || availableVehicles.length === 0">{{ saving ? 'Creation...' : 'Creer la location' }}</button>
+    </form>
+  </article>
+
+  <article class="card info-card">
+    <span class="badge info">Regle metier</span>
+    <h2>Calcul automatique</h2>
+    <p>Le backend calcule le total selon le nombre de jours inclusifs et le prixParJour du vehicule. Une location active bloque la disponibilite du vehicule.</p>
+    <div class="steps">
+      <span>1. Choisir vehicule</span>
+      <span>2. Confirmer client</span>
+      <span>3. JWT + role autorise</span>
+    </div>
+  </article>
+</section>
+
+<section class="card table-card" *ngIf="auth.canManage()">
+  <div class="section-title">
+    <h2>Historique des locations</h2>
+    <button class="btn btn-ghost" (click)="loadRentals()">Actualiser</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Vehicule</th>
+        <th>Agence</th>
+        <th>Client</th>
+        <th>Periode</th>
+        <th>Total</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let rental of rentals">
+        <td>#{{ rental.id }}</td>
+        <td><strong>{{ rental.vehicleLabel }}</strong><br><small>{{ rental.matricule }}</small></td>
+        <td>{{ rental.agencyName }}</td>
+        <td>{{ rental.clientName }}<br><small>{{ rental.clientEmail }}</small></td>
+        <td>{{ rental.dateDebut }} -> {{ rental.dateFin }}</td>
+        <td><strong>{{ rental.totalPrice | number:'1.0-0' }} DH</strong></td>
+        <td><span class="badge" [ngClass]="statusClass(rental.status)">{{ rental.status }}</span></td>
+        <td>
+          <div class="row-actions" *ngIf="rental.status === 'ACTIVE'">
+            <button class="btn btn-success" (click)="finish(rental)">Terminer</button>
+            <button class="btn btn-danger" (click)="cancel(rental)">Annuler</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,53 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Vue globale des agences, vehicules disponibles et locations.</p>
+  </div>
+  <a routerLink="/vehicles" class="btn btn-primary">Voir les vehicules</a>
+</div>
+
+<section class="grid grid-4 stats" *ngIf="stats; else clientSummary">
+  <div class="card stat"><span>Agences</span><strong>{{ stats.totalAgencies }}</strong></div>
+  <div class="card stat"><span>Vehicules</span><strong>{{ stats.totalVehicles }}</strong></div>
+  <div class="card stat success"><span>Disponibles</span><strong>{{ stats.availableVehicles }}</strong></div>
+  <div class="card stat warning"><span>Locations actives</span><strong>{{ stats.activeRentals }}</strong></div>
+</section>
+
+<ng-template #clientSummary>
+  <section class="client-hero card">
+    <div>
+      <span class="badge info">Espace client</span>
+      <h2>Choisissez un vehicule disponible</h2>
+      <p>Consultez les offres et creez une demande de location en quelques clics.</p>
+    </div>
+    <a routerLink="/rentals" class="btn btn-primary">Louer maintenant</a>
+  </section>
+</ng-template>
+
+<section class="card available-card">
+  <div class="section-title">
+    <div>
+      <h2>Vehicules disponibles</h2>
+      <p>{{ availableVehicles.length }} vehicules affiches</p>
+    </div>
+  </div>
+
+  <div class="vehicles-grid" *ngIf="!loading; else loadingBlock">
+    <article class="vehicle-card" *ngFor="let vehicle of availableVehicles">
+      <div class="vehicle-top">
+        <span class="type">{{ vehicle.type }}</span>
+        <span class="badge" [ngClass]="statusClass(vehicle.statut)">{{ vehicle.statut }}</span>
+      </div>
+      <h3>{{ vehicle.marque }} {{ vehicle.modele }}</h3>
+      <p>{{ vehicle.agencyName }} - {{ vehicle.matricule }}</p>
+      <div class="price">{{ vehicle.prixParJour | number:'1.0-0' }} DH <span>/ jour</span></div>
+    </article>
+  </div>
+  <ng-template #loadingBlock><p>Chargement...</p></ng-template>
+</section>
+
+<section class="grid grid-3 insights" *ngIf="stats">
+  <div class="card mini"><span>Voitures</span><strong>{{ stats.cars }}</strong></div>
+  <div class="card mini"><span>Motos</span><strong>{{ stats.motorcycles }}</strong></div>
+  <div class="card mini danger"><span>Maintenance</span><strong>{{ stats.maintenanceVehicles }}</strong></div>
+</section>

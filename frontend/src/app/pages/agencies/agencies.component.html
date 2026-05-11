@@ -1,0 +1,60 @@
+<div class="page-header">
+  <div>
+    <h1>Agences</h1>
+    <p>Suivez les agences et le parc de vehicules rattache.</p>
+  </div>
+  <span class="badge info">{{ agencies.length }} agences</span>
+</div>
+
+<div class="alert error" *ngIf="error">{{ error }}</div>
+<div class="alert success" *ngIf="success">{{ success }}</div>
+
+<section class="card form-card" *ngIf="auth.canManage()">
+  <div class="form-title">
+    <div>
+      <h2>{{ editingId ? 'Modifier une agence' : 'Nouvelle agence' }}</h2>
+      <p>Les administrateurs peuvent supprimer une agence vide.</p>
+    </div>
+    <button class="btn btn-ghost" *ngIf="editingId" (click)="cancelEdit()">Annuler</button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+    <div class="field"><label>Nom</label><input formControlName="nom" placeholder="ENSET Cars Casa"></div>
+    <div class="field"><label>Ville</label><input formControlName="ville" placeholder="Casablanca"></div>
+    <div class="field"><label>Adresse</label><input formControlName="adresse" placeholder="Bd Hassan II"></div>
+    <div class="field"><label>Telephone</label><input formControlName="telephone" placeholder="+212..."></div>
+    <div class="actions-row"><button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Sauvegarde...' : 'Enregistrer' }}</button></div>
+  </form>
+</section>
+
+<section class="card table-card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+      <tr>
+        <th>Agence</th>
+        <th>Ville</th>
+        <th>Adresse</th>
+        <th>Telephone</th>
+        <th>Vehicules</th>
+        <th *ngIf="auth.canManage()">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let agency of agencies">
+        <td><strong>{{ agency.nom }}</strong></td>
+        <td>{{ agency.ville }}</td>
+        <td>{{ agency.adresse }}</td>
+        <td>{{ agency.telephone }}</td>
+        <td><span class="badge dark">{{ agency.vehicleCount }}</span></td>
+        <td *ngIf="auth.canManage()">
+          <div class="row-actions">
+            <button class="btn btn-secondary" (click)="edit(agency)">Modifier</button>
+            <button class="btn btn-danger" *ngIf="auth.isAdmin()" (click)="delete(agency)">Supprimer</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p *ngIf="!loading && agencies.length === 0">Aucune agence pour le moment.</p>
+</section>

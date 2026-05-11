@@ -1,0 +1,115 @@
+<div class="page-header">
+  <div>
+    <h1>Vehicules</h1>
+    <p>Gestion des voitures et motos disponibles dans les agences.</p>
+  </div>
+  <span class="badge info">{{ vehicles.length }} resultats</span>
+</div>
+
+<div class="alert error" *ngIf="error">{{ error }}</div>
+<div class="alert success" *ngIf="success">{{ success }}</div>
+
+<section class="card manager" *ngIf="auth.canManage()">
+  <div class="manager-head">
+    <div>
+      <h2>{{ editingId ? 'Modifier le vehicule' : 'Ajouter un vehicule' }}</h2>
+      <p>Les champs specifiques changent selon le type selectionne.</p>
+    </div>
+    <button class="btn btn-ghost" *ngIf="editingId" (click)="cancelEdit()">Annuler</button>
+  </div>
+
+  <form [formGroup]="vehicleForm" (ngSubmit)="saveVehicle()" class="form-grid">
+    <div class="field">
+      <label>Type</label>
+      <select formControlName="type">
+        <option *ngFor="let type of types" [ngValue]="type">{{ type }}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Agence</label>
+      <select formControlName="agencyId">
+        <option [ngValue]="0">Choisir une agence</option>
+        <option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.nom }}</option>
+      </select>
+    </div>
+    <div class="field"><label>Marque</label><input formControlName="marque" placeholder="Renault"></div>
+    <div class="field"><label>Modele</label><input formControlName="modele" placeholder="Clio 5"></div>
+    <div class="field"><label>Matricule</label><input formControlName="matricule" placeholder="A-123-B"></div>
+    <div class="field"><label>Prix / jour</label><input type="number" formControlName="prixParJour"></div>
+    <div class="field"><label>Date mise en service</label><input type="date" formControlName="dateMiseEnService"></div>
+    <div class="field">
+      <label>Statut</label>
+      <select formControlName="statut">
+        <option *ngFor="let status of statuses" [ngValue]="status">{{ status }}</option>
+      </select>
+    </div>
+
+    <ng-container *ngIf="selectedType === 'VOITURE'; else motoFields">
+      <div class="field"><label>Nombre portes</label><input type="number" formControlName="nombrePortes"></div>
+      <div class="field">
+        <label>Carburant</label>
+        <select formControlName="typeCarburant"><option *ngFor="let fuel of fuelTypes" [ngValue]="fuel">{{ fuel }}</option></select>
+      </div>
+      <div class="field">
+        <label>Boite vitesse</label>
+        <select formControlName="boiteVitesse"><option *ngFor="let box of gearBoxes" [ngValue]="box">{{ box }}</option></select>
+      </div>
+    </ng-container>
+
+    <ng-template #motoFields>
+      <div class="field"><label>Cylindree</label><input type="number" formControlName="cylindree"></div>
+      <div class="field">
+        <label>Type moto</label>
+        <select formControlName="typeMoto"><option *ngFor="let type of motorcycleTypes" [ngValue]="type">{{ type }}</option></select>
+      </div>
+      <div class="field inline-field">
+        <label>Casque inclus</label>
+        <input type="checkbox" formControlName="casqueInclus">
+      </div>
+    </ng-template>
+
+    <div class="actions-row">
+      <button class="btn btn-primary" type="submit" [disabled]="saving">{{ saving ? 'Sauvegarde...' : (editingId ? 'Modifier' : 'Ajouter') }}</button>
+    </div>
+  </form>
+</section>
+
+<section class="card filters">
+  <form [formGroup]="filterForm" (ngSubmit)="loadVehicles()" class="filter-grid">
+    <div class="field"><label>Recherche</label><input formControlName="keyword" placeholder="Marque, modele, matricule"></div>
+    <div class="field"><label>Statut</label><select formControlName="status"><option [ngValue]="''">Tous</option><option *ngFor="let s of statuses" [ngValue]="s">{{ s }}</option></select></div>
+    <div class="field"><label>Type</label><select formControlName="type"><option [ngValue]="''">Tous</option><option *ngFor="let t of types" [ngValue]="t">{{ t }}</option></select></div>
+    <div class="field"><label>Agence</label><select formControlName="agencyId"><option [ngValue]="0">Toutes</option><option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.nom }}</option></select></div>
+    <button class="btn btn-primary" type="submit">Filtrer</button>
+    <button class="btn btn-ghost" type="button" (click)="resetFilters()">Reset</button>
+  </form>
+</section>
+
+<section class="vehicle-grid" *ngIf="!loading; else loadingBlock">
+  <article class="card vehicle-card" *ngFor="let vehicle of vehicles">
+    <div class="vehicle-top">
+      <span class="badge dark">{{ vehicle.type }}</span>
+      <span class="badge" [ngClass]="statusClass(vehicle.statut)">{{ vehicle.statut }}</span>
+    </div>
+    <h3>{{ vehicle.marque }} {{ vehicle.modele }}</h3>
+    <p>{{ vehicle.agencyName }} - {{ vehicle.matricule }}</p>
+    <div class="specs">
+      <span *ngIf="vehicle.type === 'VOITURE'">{{ vehicle.nombrePortes }} portes</span>
+      <span *ngIf="vehicle.type === 'VOITURE'">{{ vehicle.typeCarburant }}</span>
+      <span *ngIf="vehicle.type === 'VOITURE'">{{ vehicle.boiteVitesse }}</span>
+      <span *ngIf="vehicle.type === 'MOTO'">{{ vehicle.cylindree }} cc</span>
+      <span *ngIf="vehicle.type === 'MOTO'">{{ vehicle.typeMoto }}</span>
+      <span *ngIf="vehicle.type === 'MOTO'">Casque: {{ vehicle.casqueInclus ? 'oui' : 'non' }}</span>
+    </div>
+    <div class="price-row">
+      <strong>{{ vehicle.prixParJour | number:'1.0-0' }} DH</strong>
+      <span>/ jour</span>
+    </div>
+    <div class="card-actions" *ngIf="auth.canManage()">
+      <button class="btn btn-secondary" (click)="edit(vehicle)">Modifier</button>
+      <button class="btn btn-danger" *ngIf="auth.isAdmin()" (click)="delete(vehicle)">Supprimer</button>
+    </div>
+  </article>
+</section>
+
+<ng-template #loadingBlock><p>Chargement des vehicules...</p></ng-template>

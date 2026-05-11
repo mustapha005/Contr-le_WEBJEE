@@ -1,0 +1,18 @@
+<div class="page-header">
+  <div>
+    <h1>Administration</h1>
+    <p>Resume des autorisations configurees cote backend et frontend.</p>
+  </div>
+</div>
+
+<section class="grid grid-3">
+  <article class="card role-card" *ngFor="let item of roles">
+    <span class="badge info">{{ item.role }}</span>
+    <p>{{ item.permissions }}</p>
+  </article>
+</section>
+
+<section class="card note-card">
+  <h2>Swagger et H2</h2>
+  <p>Swagger UI est disponible sur <strong>http://localhost:8085/swagger-ui.html</strong>. La console H2 est disponible sur <strong>http://localhost:8085/h2-console</strong>.</p>
+</section>

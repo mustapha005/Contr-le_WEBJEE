@@ -1,0 +1,11 @@
+.form-card, .info-card, .table-card { padding: 1.2rem; }
+.form-card h2, .info-card h2 { margin: 0 0 .4rem; }
+.form-card p, .info-card p { color: var(--muted); line-height: 1.65; }
+.form-grid.one { grid-template-columns: 1fr; }
+.steps { display: grid; gap: .7rem; margin-top: 1rem; }
+.steps span { background: #f8fafc; border: 1px solid var(--border); padding: .85rem; border-radius: 14px; font-weight: 800; }
+.table-card { margin-top: 1.2rem; }
+.section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.section-title h2 { margin: 0; }
+.row-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+small { color: var(--muted); }

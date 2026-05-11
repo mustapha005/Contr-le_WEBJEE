@@ -1,0 +1,38 @@
+<ng-container *ngIf="!isLoginPage; else publicPage">
+  <div class="shell">
+    <aside class="sidebar card">
+      <div class="brand">
+        <div class="brand-icon">VR</div>
+        <div>
+          <strong>VehicleRent</strong>
+          <span>Exam JEE</span>
+        </div>
+      </div>
+
+      <nav>
+        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/vehicles" routerLinkActive="active">Vehicules</a>
+        <a routerLink="/agencies" routerLinkActive="active">Agences</a>
+        <a routerLink="/rentals" routerLinkActive="active">Locations</a>
+        <a *ngIf="auth.isAdmin()" routerLink="/admin" routerLinkActive="active">Admin</a>
+      </nav>
+
+      <div class="user-card" *ngIf="auth.currentUser as user">
+        <div class="avatar">{{ user.fullName.charAt(0) }}</div>
+        <div>
+          <strong>{{ user.fullName }}</strong>
+          <span>{{ user.role }}</span>
+        </div>
+      </div>
+      <button class="btn btn-ghost logout" (click)="logout()">Deconnexion</button>
+    </aside>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</ng-container>
+
+<ng-template #publicPage>
+  <router-outlet></router-outlet>
+</ng-template>

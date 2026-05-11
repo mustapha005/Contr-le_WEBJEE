@@ -1,0 +1,6 @@
+.form-card, .table-card { padding: 1.2rem; margin-bottom: 1.2rem; }
+.form-title { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.form-title h2, .form-title p { margin: 0; }
+.form-title p { color: var(--muted); margin-top: .25rem; }
+.actions-row { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+.row-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
